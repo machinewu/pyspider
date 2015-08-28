@@ -33,16 +33,18 @@
     # set common_fields, results = result_formater(results)
     <table class="table table-condensed table-striped">
       <thead>
-        <th>url</th>
-        <th></th>
-        # for field in common_fields|sort
-        <th>
-          {{ field }}
-        </th>
-        # endfor
-        <th>
-          ...
-        </th>
+        <tr>
+          <th>url</th>
+          <th></th>
+          # for field in common_fields|sort
+          <th>
+            {{ field }}
+          </th>
+          # endfor
+          <th>
+            ...
+          </th>
+        </tr>
       </thead>
       <tbody>
         # for result in results

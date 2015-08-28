@@ -17,7 +17,7 @@
   </head>
 
   <body>
-    <ol class=tasks>
+    <ul class=tasks>
       {% for task in tasks | sort(reverse=True, attribute='updatetime') %}
       <li class=task>
         {% if task.status %}
@@ -39,6 +39,9 @@
         <a class=callback href="/debug/{{ task.project }}?taskid={{ task.taskid }}" target=_blank>{{ task.project }}</a>
         &gt;
         <a class=url href="/task/{{ task.project }}:{{ task.taskid }}" title="{{ task.url }}" target=_blank>{{ task.url }}</a>
+        {% if task.track and task.track.fetch and task.track.fetch.mark %}
+          mark: {{ task.track.fetch.mark }}
+        {% endif %}
 
         <span class=update-time>{{ task.updatetime | format_date }}</span>
 

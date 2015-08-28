@@ -533,6 +533,7 @@ class Scheduler(object):
                 'time',
                 'follows',
                 'status_code',
+                'mark',
             ))
 
             iters = [iter(x['active_tasks']) for k, x in iteritems(self.projects)

@@ -274,6 +274,7 @@ class BaseHandler(object):
                 'load_images',
                 'fetch_type',
                 'use_gzip',
+                'mark',
         ):
             if key in kwargs:
                 fetch[key] = kwargs.pop(key)
@@ -340,6 +341,7 @@ class BaseHandler(object):
 
           save
           taskid
+          mark
 
           full documents: http://pyspider.readthedocs.org/en/latest/apis/self.crawl/
         '''

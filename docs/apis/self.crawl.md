@@ -158,6 +158,8 @@ def get_taskid(self, task):
 ```
 > Only url is md5 -ed as taskid by default, the code above add `data` of POST request as part of taskid.
 
+* `mark` - setting a mark to identify the same URL with different taskid (when crawling the same URL with different POST data or other different) on the `Active Tasks` web page.
+
 * `force_update` - force update task params even if the task is in `ACTIVE` status. <a name="force_update" href="#force_update">¶</a>
 
 cURL command

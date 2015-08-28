@@ -150,6 +150,7 @@ class Processor(object):
                         'encoding': response.encoding,
                         'headers': track_headers,
                         'content': response.text[:500] if ret.exception else None,
+                        'mark': task.get('fetch', {}).get('mark'),
                     },
                     'process': {
                         'ok': not ret.exception,
