@@ -89,6 +89,13 @@ dt .glyphicon-remove {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.tasks .mark {
+  font-weight: bold;
+  color: #d9534f;
+}
+.tasks .underline {
+  text-decoration: underline;
+}
 .tasks .update-time {
   font-weight: bold;
 }

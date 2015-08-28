@@ -40,7 +40,9 @@
         &gt;
         <a class=url href="/task/{{ task.project }}:{{ task.taskid }}" title="{{ task.url }}" target=_blank>{{ task.url }}</a>
         {% if task.track and task.track.fetch and task.track.fetch.mark %}
-          mark: {{ task.track.fetch.mark }}
+        <span class=mark>
+          [ <span class=underline>{{ task.track.fetch.mark }}</span> ]
+        </span>
         {% endif %}
 
         <span class=update-time>{{ task.updatetime | format_date }}</span>
