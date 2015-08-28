@@ -39,7 +39,8 @@ class ResultDB(MySQLMixin, SplitTableMixin, BaseResultDB, BaseDB):
             `taskid` varchar(64) PRIMARY KEY,
             `url` varchar(1024),
             `result` MEDIUMBLOB,
-            `updatetime` double(16, 4)
+            `updatetime` double(16, 4),
+            INDEX `updatetime_index` (`updatetime`)
             ) ENGINE=InnoDB CHARSET=utf8''' % self.escape(tablename))
 
     def _parse(self, data):
