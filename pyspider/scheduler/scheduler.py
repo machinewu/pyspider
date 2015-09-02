@@ -245,7 +245,12 @@ class Scheduler(object):
 
                 if task['taskid'] in self.task_queue[task['project']]:
                     if not task.get('schedule', {}).get('force_update', False):
-                        logger.debug('ignore newtask %(project)s:%(taskid)s %(url)s', task)
+                        logger.debug('ignore newtask %(project)s:%(taskid)s %(url)s    [%(mark)s]', {
+                            'project': task['project'],
+                            'taskid': task['taskid'],
+                            'url': task['url'],
+                            'mark': task.get('fetch', {}).get('mark')
+                        })
                         continue
 
                 if task['taskid'] in tasks:
@@ -256,7 +261,12 @@ class Scheduler(object):
 
         for task in itervalues(tasks):
             if self.INQUEUE_LIMIT and len(self.task_queue[task['project']]) >= self.INQUEUE_LIMIT:
-                logger.debug('overflow task %(project)s:%(taskid)s %(url)s', task)
+                logger.debug('overflow task %(project)s:%(taskid)s %(url)s    [%(mark)s]', {
+                    'project': task['project'],
+                    'taskid': task['taskid'],
+                    'url': task['url'],
+                    'mark': task.get('fetch', {}).get('mark')
+                })
                 continue
 
             oldtask = self.taskdb.get_task(task['project'], task['taskid'],
@@ -578,7 +588,12 @@ class Scheduler(object):
         self._cnt['1h'].event((project, 'pending'), +1)
         self._cnt['1d'].event((project, 'pending'), +1)
         self._cnt['all'].event((project, 'pending'), +1)
-        logger.info('new task %(project)s:%(taskid)s %(url)s', task)
+        logger.info('new task %(project)s:%(taskid)s %(url)s    [%(mark)s]', {
+            'project': task['project'],
+            'taskid': task['taskid'],
+            'url': task['url'],
+            'mark': task.get('fetch', {}).get('mark')
+        })
         return task
 
     def on_old_request(self, task, old_task):
@@ -598,7 +613,12 @@ class Scheduler(object):
             restart = True
 
         if not restart:
-            logger.debug('ignore newtask %(project)s:%(taskid)s %(url)s', task)
+            logger.debug('ignore newtask %(project)s:%(taskid)s %(url)s    [%(mark)s]', {
+                'project': task['project'],
+                'taskid': task['taskid'],
+                'url': task['url'],
+                'mark': task.get('fetch', {}).get('mark')
+            })
             return
 
         task['status'] = self.taskdb.ACTIVE
@@ -614,7 +634,12 @@ class Scheduler(object):
             self._cnt['all'].event((project, 'success'), -1).event((project, 'pending'), +1)
         elif old_task['status'] == self.taskdb.FAILED:
             self._cnt['all'].event((project, 'failed'), -1).event((project, 'pending'), +1)
-        logger.info('restart task %(project)s:%(taskid)s %(url)s', task)
+        logger.info('restart task %(project)s:%(taskid)s %(url)s    [%(mark)s]', {
+            'project': task['project'],
+            'taskid': task['taskid'],
+            'url': task['url'],
+            'mark': task.get('fetch', {}).get('mark')
+        })
         return task
 
     def on_task_status(self, task):
@@ -662,7 +687,12 @@ class Scheduler(object):
         self._cnt['1h'].event((project, 'success'), +1)
         self._cnt['1d'].event((project, 'success'), +1)
         self._cnt['all'].event((project, 'success'), +1).event((project, 'pending'), -1)
-        logger.info('task done %(project)s:%(taskid)s %(url)s', task)
+        logger.info('task done %(project)s:%(taskid)s %(url)s    [%(mark)s]', {
+            'project': task['project'],
+            'taskid': task['taskid'],
+            'url': task['url'],
+            'mark': task.get('track', {}).get('fetch', {}).get('mark')
+        })
         return task
 
     def on_task_failed(self, task):
@@ -699,7 +729,12 @@ class Scheduler(object):
             self._cnt['1h'].event((project, 'failed'), +1)
             self._cnt['1d'].event((project, 'failed'), +1)
             self._cnt['all'].event((project, 'failed'), +1).event((project, 'pending'), -1)
-            logger.info('task failed %(project)s:%(taskid)s %(url)s' % task)
+            logger.info('task failed %(project)s:%(taskid)s %(url)s    [%(mark)s]', {
+                'project': task['project'],
+                'taskid': task['taskid'],
+                'url': task['url'],
+                'mark': task.get('track', {}).get('fetch', {}).get('mark')
+            })
             return task
         else:
             task['schedule']['retried'] = retried + 1
@@ -713,14 +748,24 @@ class Scheduler(object):
             self._cnt['1h'].event((project, 'retry'), +1)
             self._cnt['1d'].event((project, 'retry'), +1)
             # self._cnt['all'].event((project, 'retry'), +1)
-            logger.info('task retry %d/%d %%(project)s:%%(taskid)s %%(url)s' % (
-                retried, retries), task)
+            logger.info('task retry %d/%d %%(project)s:%%(taskid)s %%(url)s    [%%(mark)s]' % (
+                retried, retries), {
+                'project': task['project'],
+                'taskid': task['taskid'],
+                'url': task['url'],
+                'mark': task.get('track', {}).get('fetch', {}).get('mark')
+            })
             return task
 
     def on_select_task(self, task):
         '''Called when a task is selected to fetch & process'''
         # inject informations about project
-        logger.info('select %(project)s:%(taskid)s %(url)s', task)
+        logger.info('select %(project)s:%(taskid)s %(url)s     [%(mark)s]', {
+            'project': task['project'],
+            'taskid': task['taskid'],
+            'url': task['url'],
+            'mark': task.get('fetch', {}).get('mark')
+        })
 
         project_info = self.projects.get(task['project'])
         assert project_info, 'no such project'
