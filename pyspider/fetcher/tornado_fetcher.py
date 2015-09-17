@@ -146,13 +146,14 @@ class Fetcher(object):
         result['time'] = 0
         result['save'] = task.get('fetch', {}).get('save')
         if len(result['content']) < 70:
-            logger.info("[200] %s:%s %s 0s", task.get('project'), task.get('taskid'), url)
+            logger.info("[200] %s:%s %s    [%s] 0s", task.get('project'), task.get('taskid'), task.get('fetch', {}).get('mark'), url)
         else:
             logger.info(
-                "[200] %s:%s data:,%s...[content:%d] 0s",
+                "[200] %s:%s data:,%s...[content:%d]    [%s] 0s",
                 task.get('project'), task.get('taskid'),
                 result['content'][:70],
-                len(result['content'])
+                len(result['content']),
+                task.get('fetch', {}).get('mark')
             )
 
         callback('data', task, result)
@@ -168,9 +169,9 @@ class Fetcher(object):
             'orig_url': url,
             'url': url,
         }
-        logger.error("[%d] %s:%s %s, %r %.2fs",
+        logger.error("[%d] %s:%s %s    [%s], %r %.2fs",
                      result['status_code'], task.get('project'), task.get('taskid'),
-                     url, error, result['time'])
+                     url, task.get('fetch', {}).get('mark'), error, result['time'])
         callback(type, task, result)
         self.on_result(type, task, result)
         return task, result
@@ -298,13 +299,13 @@ class Fetcher(object):
             if response.error:
                 result['error'] = utils.text(response.error)
             if 200 <= response.code < 300:
-                logger.info("[%d] %s:%s %s %.2fs", response.code,
+                logger.info("[%d] %s:%s %s    [%s] %.2fs", response.code,
                             task.get('project'), task.get('taskid'),
-                            url, result['time'])
+                            url, task_fetch.get('mark'), result['time'])
             else:
-                logger.warning("[%d] %s:%s %s %.2fs", response.code,
+                logger.warning("[%d] %s:%s %s    [%s] %.2fs", response.code,
                                task.get('project'), task.get('taskid'),
-                               url, result['time'])
+                               url, task_fetch.get('mark'), result['time'])
             callback('http', task, result)
             self.on_result('http', task, result)
             return task, result
@@ -349,7 +350,7 @@ class Fetcher(object):
                 "time": 0,
                 "save": task.get('fetch', {}).get('save')
             }
-            logger.warning("[501] %s:%s %s 0s", task.get('project'), task.get('taskid'), url)
+            logger.warning("[501] %s:%s %s    [%s] 0s", task.get('project'), task.get('taskid'), url, task.get('fetch', {}).get('mark'))
             callback('http', task, result)
             self.on_result('http', task, result)
             return task, result
@@ -391,12 +392,12 @@ class Fetcher(object):
                 return handle_error(e)
 
             if result.get('status_code', 200):
-                logger.info("[%d] %s:%s %s %.2fs", result['status_code'],
-                            task.get('project'), task.get('taskid'), url, result['time'])
+                logger.info("[%d] %s:%s %s    [%s] %.2fs", result['status_code'],
+                            task.get('project'), task.get('taskid'), url, task_fetch.get('mark'), result['time'])
             else:
-                logger.error("[%d] %s:%s %s, %r %.2fs", result['status_code'],
+                logger.error("[%d] %s:%s %s    [%s], %r %.2fs", result['status_code'],
                              task.get('project'), task.get('taskid'),
-                             url, result['content'], result['time'])
+                             url, task_fetch.get('mark'), result['content'], result['time'])
             callback('phantomjs', task, result)
             self.on_result('phantomjs', task, result)
             return task, result
