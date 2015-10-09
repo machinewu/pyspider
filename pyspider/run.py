@@ -286,8 +286,8 @@ def result_worker(ctx, result_cls):
               help='webui bind to host')
 @click.option('--cdn', default='//cdnjscn.b0.upaiyun.com/libs/',
               help='js/css cdn server')
-@click.option('--scheduler-rpc', callback=connect_rpc, help='xmlrpc path of scheduler')
-@click.option('--fetcher-rpc', callback=connect_rpc, help='xmlrpc path of fetcher')
+@click.option('--scheduler-rpc', help='xmlrpc path of scheduler')
+@click.option('--fetcher-rpc', help='xmlrpc path of fetcher')
 @click.option('--max-rate', type=float, help='max rate for each project')
 @click.option('--max-burst', type=float, help='max burst for each project')
 @click.option('--username', envvar='WEBUI_USERNAME',
@@ -440,12 +440,13 @@ def all(ctx, fetcher_num, processor_num, result_worker_num, run_in):
 
     try:
         # phantomjs
-        phantomjs_config = g.config.get('phantomjs', {})
-        phantomjs_config.setdefault('auto_restart', True)
-        threads.append(run_in(ctx.invoke, phantomjs, **phantomjs_config))
-        time.sleep(2)
-        if threads[-1].is_alive() and not g.get('phantomjs_proxy'):
-            g['phantomjs_proxy'] = '127.0.0.1:%s' % phantomjs_config.get('port', 25555)
+        if not g.get('phantomjs_proxy'):
+            phantomjs_config = g.config.get('phantomjs', {})
+            phantomjs_config.setdefault('auto_restart', True)
+            threads.append(run_in(ctx.invoke, phantomjs, **phantomjs_config))
+            time.sleep(2)
+            if threads[-1].is_alive() and not g.get('phantomjs_proxy'):
+                g['phantomjs_proxy'] = '127.0.0.1:%s' % phantomjs_config.get('port', 25555)
 
         # result worker
         result_worker_config = g.config.get('result_worker', {})
